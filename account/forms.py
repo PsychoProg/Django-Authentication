@@ -46,3 +46,8 @@ class UserChangeForm(forms.ModelForm):
         model = User
         fields = ["email", "password", "fullname", "is_active", "is_admin"]
 
+
+class LoginForm(forms.Form):
+    """ login form class """
+    phone = forms.CharField(widget=forms.TextInput(attrs={'class': 'fa fa-phone'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'fa fa-lock'}))
