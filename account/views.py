@@ -25,8 +25,9 @@ class UserLogin(View):
             else:
                 form.add_error('phone', 'invalid phone number!!!')
 
-        else:
-            form.add_error('phone', 'invalid data!!!')
+        # else:
+            # form.add_error('phone', 'invalid data!!!')
+            # return redirect('account:login_url')
 
         return render(request, 'account/login.html', context)
 

@@ -11,23 +11,28 @@
         </div>
         <form method="post">
             {% csrf_token %}
-        {# errors #}
+            {# errors #}
             <div class="field">
-                {% for error in form.phone.errors %}
-                    <p>{{ form.phone.errors }}</p>
-                {% endfor %}
-            </div>
 
+                {% if form.phone.errors is not Null %}
+
+                    {% for error in form.phone.errors %}
+
+                        <p>{{ form.phone.errors }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <br>
             <br>
             <div class="field">
-{#                <input type="text" name="phone" required>#}
+                {#                <input type="text" name="phone" required>#}
                 {{ form.phone }}
                 <span class="fas fa-phone"></span>
                 <label>phone number</label>
             </div>
             <br>
             <div class="field">
-{#                <input type="password" name="password" required>#}
+                {#                <input type="password" name="password" required>#}
                 {{ form.password }}
                 <span class="fas fa-lock"></span>
                 <label>Password</label>

@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 from account.models import User
+# validators
+from django.core import validators
 
 
 class UserCreationForm(forms.ModelForm):
@@ -49,5 +51,34 @@ class UserChangeForm(forms.ModelForm):
 
 class LoginForm(forms.Form):
     """ login form class """
-    phone = forms.CharField(widget=forms.TextInput(attrs={'class': 'fa fa-phone'}))
+    # validate use validators
+    # phone = forms.CharField(widget=forms.TextInput(attrs={'class': 'fa fa-phone'}),
+    #                         validators=[validators.MaxLengthValidator(11), start_with_zero])
+
+    phone = forms.CharField(widget=forms.TextInput(attrs={'class': 'fa fa-phone'}),)
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'fa fa-lock'}))
+    # slug = forms.SlugField()
+    # use validators
+    # slug = forms.CharField(validators=[validators.validate_slug])
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if len(phone) > 11 or len(phone) < 11:
+            raise ValidationError('invalid phone number', code='phone_len_error')
+
+        if phone[0] != 0:
+            raise ValidationError('phone number should start with 0!')
+        return phone
+
+    # def clean(self):
+    #     """ use clean function for various type of errors """
+    #     # cleaned data
+    #     cd = super().clean()
+    #     phone = cd['phone']
+    #     if len(phone) > 11:
+    #         raise ValidationError(
+    #             'max phone len is 11 digits!!!',
+    #             code='invalid',
+    #             params={'value': f'{phone}'},
+    #         )
+    # add: for error in non_field_errors
