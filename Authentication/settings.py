@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # my apps
     'account.apps.AccountConfig',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -126,4 +127,4 @@ STATICFILES_DIRS = [BASE_DIR / 'assets']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # custom user model
-AUTH_USER_MODEL = "account.User"
+AUTH_USER_MODEL = "account.CustomUser"

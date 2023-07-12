@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
-from account.models import User
+from account.models import CustomUser
 # validators
 from django.core import validators
 
@@ -16,7 +16,7 @@ class UserCreationForm(forms.ModelForm):
     )
 
     class Meta:
-        model = User
+        model = CustomUser
         fields = ["email"]
 
     def clean_password2(self):
@@ -45,8 +45,8 @@ class UserChangeForm(forms.ModelForm):
     password = ReadOnlyPasswordHashField()
 
     class Meta:
-        model = User
-        fields = ["email", "password", "fullname", "is_active", "is_admin"]
+        model = CustomUser
+        fields = ["email", "password", "fullname", "phone"]
 
 
 class LoginForm(forms.Form):
@@ -55,20 +55,30 @@ class LoginForm(forms.Form):
     # phone = forms.CharField(widget=forms.TextInput(attrs={'class': 'fa fa-phone'}),
     #                         validators=[validators.MaxLengthValidator(11), start_with_zero])
 
-    phone = forms.CharField(widget=forms.TextInput(attrs={'class': 'fa fa-phone'}),)
+    # phone = forms.CharField(widget=forms.TextInput(attrs={'class': 'fa fa-phone'}),)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'fa fa-email'}),)
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'fa fa-lock'}))
     # slug = forms.SlugField()
     # use validators
     # slug = forms.CharField(validators=[validators.validate_slug])
 
-    def clean_phone(self):
-        phone = self.cleaned_data.get('phone')
-        if len(phone) > 11 or len(phone) < 11:
-            raise ValidationError('invalid phone number', code='phone_len_error')
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            domain = email.split('@')[1]
+            if domain != 'gmail.com':
+                raise forms.ValidationError('only gmail.com email addresses are allowed.')
 
-        if phone[0] != 0:
-            raise ValidationError('phone number should start with 0!')
-        return phone
+        return email
+
+    # def clean_phone(self):
+    #     phone = self.cleaned_data.get('phone')
+    #     if len(phone) > 11 or len(phone) < 11:
+    #         raise ValidationError('invalid phone number', code='phone_len_error')
+    #
+    #     if phone[0] != 0:
+    #         raise ValidationError('phone number should start with 0!         ')
+    #     return phone
 
     # def clean(self):
     #     """ use clean function for various type of errors """

@@ -1,5 +1,5 @@
 {% extends 'shared/master.html' %}
-
+{% load widget_tweaks %}
 {% block title %}
     Login
 {% endblock %}
@@ -14,11 +14,11 @@
             {# errors #}
             <div class="field">
 
-                {% if form.phone.errors is not Null %}
+                {% if form.email.errors is not Null %}
 
-                    {% for error in form.phone.errors %}
+                    {% for error in form.email.errors %}
 
-                        <p>{{ form.phone.errors }}</p>
+                        <p>{{ form.email.errors }}</p>
                     {% endfor %}
                 {% endif %}
             </div>
@@ -26,16 +26,16 @@
             <br>
             <div class="field">
                 {#                <input type="text" name="phone" required>#}
-                {{ form.phone }}
-                <span class="fas fa-phone"></span>
-                <label>phone number</label>
+                {% render_field form.email|append_attr:"" type="email" placeholder="email address" %}
+                <span class="fas fa-envelope"></span>
+                {#                <label>email address</label>#}
             </div>
             <br>
             <div class="field">
                 {#                <input type="password" name="password" required>#}
-                {{ form.password }}
+                {% render_field form.password|append_attr:"" type="password" placeholder="password" %}
                 <span class="fas fa-lock"></span>
-                <label>Password</label>
+
             </div>
             <div class="forgot-pass">
                 <a href="#">Forgot Password?</a>

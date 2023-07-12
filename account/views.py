@@ -12,18 +12,19 @@ class UserLogin(View):
         return render(request, 'account/login.html', context)
 
     def post(self, request):
+
         form = LoginForm(request.POST)
         context = {'form': form}
         if form.is_valid():
             # cleaned data = cd
             cd = form.cleaned_data
             # note: use username for authentication field
-            user = authenticate(username=cd['phone'], password=cd['password'])
+            user = authenticate(username=cd['email'], password=cd['password'])
             if user is not None:
                 login(request, user)
                 return redirect('account:login_url')
             else:
-                form.add_error('phone', 'invalid phone number!!!')
+                form.add_error('email', 'invalid email address!!!')
 
         # else:
             # form.add_error('phone', 'invalid data!!!')

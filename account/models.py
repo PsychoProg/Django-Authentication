@@ -2,13 +2,13 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
-class UserManager(BaseUserManager):
+class CustomUserManager(BaseUserManager):
     def create_user(self, phone, password=None):
         """
         Creates and saves a User with the given phone and password.
         """
         if not phone:
-            raise ValueError("Users must have an phone number")
+            raise ValueError("Users must have a phone number")
 
         user = self.model(
             phone=phone,
@@ -31,7 +31,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser):
+class CustomUser(AbstractBaseUser):
     email = models.EmailField(
         verbose_name="email address",
         max_length=255,
@@ -39,18 +39,22 @@ class User(AbstractBaseUser):
         blank=True,
         unique=True,
     )
-    fullname = models.CharField(max_length=70, verbose_name="fullname")
-    phone = models.CharField(max_length=12, unique=True, verbose_name="phone number")
+    fullname = models.CharField(max_length=70, verbose_name="fullname", null=True, blank=True)
+    phone = models.CharField(max_length=13, unique=True, verbose_name="phone number")
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(null=True, blank=True)
 
-    objects = UserManager()
+    objects = CustomUserManager()
 
     # which object we use for authentication
-    USERNAME_FIELD = "phone"
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     class Meta:
+        ordering = ('-created_at',)
         verbose_name = 'user'
         verbose_name_plural = 'users'
 
