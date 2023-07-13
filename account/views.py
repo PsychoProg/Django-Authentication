@@ -6,6 +6,7 @@ from .forms import LoginForm, RegisterForm, CheckOtpForm
 from Authentication import settings
 from random import randint
 from .models import Otp, CustomUser
+from django.utils.crypto import get_random_string
 
 
 class UserLogin(View):
@@ -59,9 +60,13 @@ class RegisterView(View):
                 [email],
                 fail_silently=False,
             )
-            Otp.objects.create(email=email, pass_code=rand_code)
+            print(rand_code)
+            token = get_random_string(length=50)
+            Otp.objects.create(token=token, email=email, pass_code=rand_code)
             # send email address via URL to check in in CheckOtpView(0
-            return redirect(reverse('account:check_otp_url') + f'?email={email}')
+            # return redirect(reverse('account:check_otp_url') + f'?email={email}')     # use token instead of email
+            return redirect(reverse('account:check_otp_url') + f'?token={token}')
+
         else:
             form.add_error('email', 'invalid email!!!')
 
@@ -75,13 +80,15 @@ class CheckOtpView(View):
         return render(request, 'account/check_otp.html', context)
 
     def post(self, request):
-        email = request.GET.get("email")
+        # email = request.GET.get("email")
+        token = request.GET.get("token")
         form = CheckOtpForm(request.POST)
         context = {'form': form}
         if form.is_valid():
             cd = form.cleaned_data
-            if Otp.objects.filter(email=email, pass_code=cd["code"]).exists():
-                user = CustomUser.objects.create(email=email)
+            if Otp.objects.filter(token=token, pass_code=cd["code"]).exists():
+                otp = Otp.objects.get(token=token)
+                user = CustomUser.objects.create(email=otp.email)
                 login(request, user)
                 return redirect('/')
         else:

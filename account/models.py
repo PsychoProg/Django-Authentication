@@ -96,6 +96,7 @@ def update_user_profile(sender, instance, created, **kwargs):
 
 class Otp(models.Model):
     """ one time password """
+    token = models.CharField(max_length=255, null=True)
     email = models.EmailField(max_length=255)
     pass_code = models.SmallIntegerField()
     expiration_date = models.DateTimeField(auto_now_add=True)
