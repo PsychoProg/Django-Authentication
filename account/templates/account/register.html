@@ -9,29 +9,25 @@
         <div class="text">
             Register Form
         </div>
-        <form action="#">
+        <form action="#" method="post">
+            {% csrf_token %}
             <div class="field">
-                <input type="text" name="username" required>
-                <span class="fas fa-user"></span>
-                <label>Username</label>
-            </div>
-            <div class="field">
-                <input type="email" name="email" required>
+                {{ form.email }}
                 <span class="fas fa-mail-bulk"></span>
-                <label>Email</label>
+{#                <label>Email</label>#}
             </div>
             <br>
-            <div class="field">
-                <input type="password" name="password1" required>
-                <span class="fas fa-lock"></span>
-                <label>Password</label>
-            </div>
-            <br>
-            <div class="field">
-                <input type="password" name="password2" required>
-                <span class="fas fa-lock"></span>
-                <label>Confrim password</label>
-            </div>
+{#            <div class="field">#}
+{#                {{ form.password }}#}
+{#                <span class="fas fa-lock"></span>#}
+{#                <label>Password</label>#}
+{#            </div>#}
+{#            <br>#}
+{#            <div class="field">#}
+{#                <input type="password" name="password2" required>#}
+{#                <span class="fas fa-lock"></span>#}
+{#                <label>Confrim password</label>#}
+{#            </div>#}
             <br>
             <button type="submit" >Register</button>
             <div class="sign-up">

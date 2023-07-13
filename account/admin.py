@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .forms import UserChangeForm, UserCreationForm
-from account.models import CustomUser
+from account.models import CustomUser, Otp
 
 
 class UserAdmin(BaseUserAdmin):
@@ -39,6 +39,7 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(CustomUser, UserAdmin)
 # ... and, since we're not using Django's built-in permissions,
 # unregister the Group model from admin.
+admin.site.register(Otp)
 admin.site.unregister(Group)
 
 # https://docs.djangoproject.com/en/4.2/topics/auth/customizing/

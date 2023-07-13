@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
-
+# update profile
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, phone, password=None):
@@ -35,12 +37,10 @@ class CustomUser(AbstractBaseUser):
     email = models.EmailField(
         verbose_name="email address",
         max_length=255,
-        null=True,
-        blank=True,
         unique=True,
     )
     fullname = models.CharField(max_length=70, verbose_name="fullname", null=True, blank=True)
-    phone = models.CharField(max_length=13, unique=True, verbose_name="phone number")
+    phone = models.CharField(max_length=13, unique=True, verbose_name="phone number", null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     verified = models.BooleanField(default=False)
@@ -59,7 +59,7 @@ class CustomUser(AbstractBaseUser):
         verbose_name_plural = 'users'
 
     def __str__(self):
-        return self.phone
+        return f"{self.phone}"
 
     def has_perm(self, perm, obj=None):
         """ Does the user have a specific permission? """
@@ -80,3 +80,25 @@ class CustomUser(AbstractBaseUser):
 # https://docs.djangoproject.com/en/4.2/topics/auth/customizing/
 
 # add AUTH_USER_MODEL = "account.MyUser" to settings.py
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    email_confirmed = models.BooleanField(default=False)
+
+
+@receiver(post_save, sender=CustomUser)
+def update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+        instance.profile.save()
+
+
+class Otp(models.Model):
+    """ one time password """
+    email = models.EmailField(max_length=255)
+    pass_code = models.SmallIntegerField()
+    expiration_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email

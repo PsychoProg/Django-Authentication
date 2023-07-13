@@ -1,7 +1,11 @@
 from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect, reverse
 from django.views import View
-from .forms import LoginForm
+from .forms import LoginForm, RegisterForm, CheckOtpForm
+from Authentication import settings
+from random import randint
+from .models import Otp, CustomUser
 
 
 class UserLogin(View):
@@ -33,3 +37,54 @@ class UserLogin(View):
         return render(request, 'account/login.html', context)
 
 
+class RegisterView(View):
+    def get(self, request):
+        form = RegisterForm()
+        context = {'form': form}
+        return render(request, 'account/register.html', context)
+
+    def post(self, request):
+        form = RegisterForm(request.POST)
+        context = {'form': form}
+        if form.is_valid():
+            # email = form.cleaned_data.get('email')
+            cd = form.cleaned_data
+            email = cd["email"]
+            rand_code = randint(10000, 99999)
+            send_mail(
+                'Verification code',
+                f'code: {rand_code}',
+                settings.EMAIL_HOST_USER,
+                # reception
+                [email],
+                fail_silently=False,
+            )
+            Otp.objects.create(email=email, pass_code=rand_code)
+            # send email address via URL to check in in CheckOtpView(0
+            return redirect(reverse('account:check_otp_url') + f'?email={email}')
+        else:
+            form.add_error('email', 'invalid email!!!')
+
+        return render(request, 'account/register.html', context)
+
+
+class CheckOtpView(View):
+    def get(self, request):
+        form = CheckOtpForm()
+        context = {'form': form}
+        return render(request, 'account/check_otp.html', context)
+
+    def post(self, request):
+        email = request.GET.get("email")
+        form = CheckOtpForm(request.POST)
+        context = {'form': form}
+        if form.is_valid():
+            cd = form.cleaned_data
+            if Otp.objects.filter(email=email, pass_code=cd["code"]).exists():
+                user = CustomUser.objects.create(email=email)
+                login(request, user)
+                return redirect('/')
+        else:
+            form.add_error('email', 'invalid email!!!')
+
+        return render(request, 'account/check_otp.html', context)

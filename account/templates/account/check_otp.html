@@ -1,0 +1,30 @@
+{% extends 'shared/master.html' %}
+{% load widget_tweaks %}
+{% block title %}
+    verification
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <div class="text">
+            Verification
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {# errors #}
+            <div class="field">
+            </div>
+            <br>
+            <br>
+            <div class="field">
+{#                {% render_field form.code|append_attr:"" type="" placeholder="enter the verification code" %}#}
+                {{ form.code }}
+                <span class="fas fa-lock"></span>
+            </div>
+            <button type="submit">Submit</button>
+            <div class="sign-up">
+                resend
+            </div>
+        </form>
+    </div>
+{% endblock %}

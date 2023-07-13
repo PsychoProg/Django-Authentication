@@ -56,7 +56,7 @@ class LoginForm(forms.Form):
     #                         validators=[validators.MaxLengthValidator(11), start_with_zero])
 
     # phone = forms.CharField(widget=forms.TextInput(attrs={'class': 'fa fa-phone'}),)
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'fa fa-email'}),)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'fa fa-envelope'}),)
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'fa fa-lock'}))
     # slug = forms.SlugField()
     # use validators
@@ -92,3 +92,18 @@ class LoginForm(forms.Form):
     #             params={'value': f'{phone}'},
     #         )
     # add: for error in non_field_errors
+
+
+class RegisterForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ('email',)
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'fa fa-envelope', 'placeholder': 'email'}),
+            # 'password': forms.EmailInput(attrs={'class': 'fa fa-lock'}),
+        }
+
+
+class CheckOtpForm(forms.Form):
+    code = forms.CharField(widget=forms.TextInput(attrs={'class': 'fa fa-lock'}),
+                           validators=[validators.MaxLengthValidator(5)])
