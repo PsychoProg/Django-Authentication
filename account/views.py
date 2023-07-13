@@ -7,6 +7,7 @@ from Authentication import settings
 from random import randint
 from .models import Otp, CustomUser
 from django.utils.crypto import get_random_string
+from uuid import uuid4
 
 
 class UserLogin(View):
@@ -39,6 +40,7 @@ class UserLogin(View):
 
 
 class RegisterView(View):
+    """ handle login and register with OTP """
     def get(self, request):
         form = RegisterForm()
         context = {'form': form}
@@ -61,7 +63,8 @@ class RegisterView(View):
                 fail_silently=False,
             )
             print(rand_code)
-            token = get_random_string(length=50)
+            # token = get_random_string(length=50)
+            token = str(uuid4())
             Otp.objects.create(token=token, email=email, pass_code=rand_code)
             # send email address via URL to check in in CheckOtpView(0
             # return redirect(reverse('account:check_otp_url') + f'?email={email}')     # use token instead of email
@@ -88,8 +91,11 @@ class CheckOtpView(View):
             cd = form.cleaned_data
             if Otp.objects.filter(token=token, pass_code=cd["code"]).exists():
                 otp = Otp.objects.get(token=token)
-                user = CustomUser.objects.create(email=otp.email)
+                # user = CustomUser.objects.create(email=otp.email)
+                user, is_created = CustomUser.objects.get_or_create(email=otp.email)
                 login(request, user)
+                # delete OTP
+                otp.delete()
                 return redirect('/')
         else:
             form.add_error('email', 'invalid email!!!')
